@@ -1,0 +1,11 @@
+.vs/
+Library/
+Temp/
+FlappyBird_BurstDebugInformation_DoNotShip/
+.vsconfig
+Assembly-CSharp.csproj
+Assembly-CSharp-Editor.csproj
+FlappyBirdWithoutPhysic.sln
+NaughtyAttributes.Core.csproj
+NaughtyAttributes.Editor.csproj
+NaughtyAttributes.Test.csproj
