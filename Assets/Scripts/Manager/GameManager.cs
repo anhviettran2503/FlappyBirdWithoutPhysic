@@ -10,12 +10,12 @@ public class GameManager : Singleton<GameManager>
     private float speed;
     public GameState State { get; private set; }
     public bool IsPlaying => State == GameState.Play;
-    public float Speed
+    public float GameSpeed
     {
         get { return speed; }
         private set
         {
-            speed= value;
+            speed = value;
             UpdateSpeed?.Invoke(speed);
         }
     }
@@ -23,6 +23,7 @@ public class GameManager : Singleton<GameManager>
     public Player Player => player;
     public UnityAction<int> UpdateScore;
     public UnityAction<GameState> UpdateState;
+    public UnityAction<GameState> AfterUpdateState;
     public UnityAction<float> UpdateSpeed;
     private void Start()
     {
@@ -31,33 +32,43 @@ public class GameManager : Singleton<GameManager>
     private void Prepare()
     {
         SetState(GameState.Prepare);
-        Speed = 1;
+        GameSpeed = 1;
         score = 0;
+        AfterSetState();
     }
     public void Play()
     {
         SetState(GameState.Play);
+        //Code inside
+        AfterSetState();
     }
     public void Pause()
     {
         SetState(GameState.Pause);
+        //Code inside
+        AfterSetState();
     }
     public void GameOver()
     {
         SetState(GameState.GameOver);
-        if(score> Storage.HighestScore)
+        SoundManager.Instance?.PlaySound(SoundType.Die);
+        if (score > Storage.HighestScore)
         {
             Storage.HighestScore = score;
         }
+        AfterSetState();
     }
     public void ReMatch()
     {
         Prepare();
+        //Code inside
+        AfterSetState();
     }
     public void IncScore()
     {
         score++;
         UpdateScore?.Invoke(score);
+        IncSpeedByScore();
     }
     private bool SetState(GameState _state)
     {
@@ -65,5 +76,16 @@ public class GameManager : Singleton<GameManager>
         State = _state;
         UpdateState?.Invoke(State);
         return true;
+    }
+    private void AfterSetState()
+    {
+        AfterUpdateState?.Invoke(State);
+    }
+    private void IncSpeedByScore()
+    {
+        if (score > 1 && score % 50 == 0)
+        {
+            speed += 0.5f;
+        }
     }
 }

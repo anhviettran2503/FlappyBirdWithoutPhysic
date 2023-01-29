@@ -20,11 +20,13 @@ public class Pipe : MonoBehaviour
     private Vector2 playerPoint;
     private Vector2 playerSize;
 
-    private float leftPos;
-    private float rightPos = 10f;
+    private float endPos;
+    private float defaultPos = 8f;
+    private float pipeDistance = 6f;
     private bool active;
     public bool Active => active;
     public bool IsThough { get; private set; }
+    public bool IsEnoughDistance => defaultPos - transform.position.x >= pipeDistance;
     private void Start()
     {
         SetDeActive();
@@ -33,8 +35,8 @@ public class Pipe : MonoBehaviour
     private void Update()
     {
         if (!active || !GameManager.Instance.IsPlaying) return;
-        transform.position += Vector3.left * GameManager.Instance.Speed * speedFactor * Time.deltaTime;
-        if (transform.position.x < leftPos) SetDeActive();
+        transform.position += Vector3.left * GameManager.Instance.GameSpeed * speedFactor * Time.deltaTime;
+        if (transform.position.x < endPos) SetDeActive();
         CheckBirdIntersect();
         CheckBirdThrough();
     }
@@ -43,8 +45,7 @@ public class Pipe : MonoBehaviour
         player = GameManager.Instance.Player;
         playerSize = player.Size;
         pipeSize = topPipe.GetComponent<SpriteRenderer>().bounds.size;
-        leftPos = Camera.main.ScreenToWorldPoint(Vector3.zero).x - 2f;
-        rightPos = Mathf.Abs(leftPos) + 5;
+        endPos = Camera.main.ScreenToWorldPoint(Vector3.zero).x - 2f;
     }
     public void CheckBirdIntersect()
     {
@@ -70,11 +71,12 @@ public class Pipe : MonoBehaviour
         {
             GameManager.Instance.IncScore();
             IsThough = true;
+            SoundManager.Instance?.PlaySound(SoundType.Point);
         }
     }
     public void SetDeActive()
     {
-        transform.position = new Vector3(rightPos, 0f, -1);
+        transform.position = new Vector3(defaultPos, 0f, -1);
         active = false;
         topPipe.SetActive(false);
         botPipe.SetActive(false);
@@ -84,7 +86,7 @@ public class Pipe : MonoBehaviour
         active = true;
         IsThough = false;
         var randomY = Random.Range(clampPipePosition.x, clampPipePosition.y);
-        transform.position = new Vector3(rightPos, randomY, -1);
+        transform.position = new Vector3(defaultPos, randomY, -1);
         topPipe.SetActive(true);
         botPipe.SetActive(true);
     }

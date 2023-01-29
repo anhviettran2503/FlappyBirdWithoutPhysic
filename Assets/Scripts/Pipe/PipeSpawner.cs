@@ -1,24 +1,38 @@
+using System;
 using UnityEngine;
 
 public class PipeSpawner : MonoBehaviour
 {
-    private float spawnDuration = 2f;
-    private float currentTime;
+
+    private Pipe currentPipe;
     private void Start()
     {
-        currentTime = 0;
+        GameManager.Instance.UpdateState += UpdateState;
     }
+
+    private void UpdateState(GameState arg0)
+    {
+        if (arg0 == GameState.Prepare) currentPipe = null;
+    }
+
     private void Update()
     {
         if (!GameManager.Instance.IsPlaying) return;
-        currentTime += Time.deltaTime;
-        if (currentTime < GameManager.Instance.Speed * spawnDuration) return;
-        CreatePipe();
-        currentTime = 0;
+        if (currentPipe == null)
+        {
+            CreatePipe();
+            return;
+        }
+        if (currentPipe.IsEnoughDistance) CreatePipe();
     }
     private void CreatePipe()
     {
-        var pipe = Pool.Instance.GetPipe();
-        pipe.SetActive();
+        currentPipe = Pool.Instance.GetPipe();
+        currentPipe.SetActive();
+    }
+    private void OnDestroy()
+    {
+        if (GameManager.Instance == null) return;
+        GameManager.Instance.UpdateState += UpdateState;
     }
 }

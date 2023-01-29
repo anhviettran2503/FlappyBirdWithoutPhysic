@@ -26,7 +26,11 @@ public class Player : MonoBehaviour
     }
     private void UpdateState(GameState arg0)
     {
-        if (arg0 == GameState.Prepare) transform.position = playerDefaultPosition;
+        if (arg0 == GameState.Prepare)
+        {
+            transform.position = playerDefaultPosition;
+            transform.rotation = Quaternion.identity;
+        }
     }
     private void OnDestroy()
     {

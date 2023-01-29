@@ -9,9 +9,9 @@ public class UIManager : MonoBehaviour
     [SerializeField] private List<Panel> panels;
     private void Start()
     {
-        GameManager.Instance.UpdateState += UpdateState;
+        GameManager.Instance.AfterUpdateState += AfterUpdateState;
     }
-    private void UpdateState(GameState _state)
+    private void AfterUpdateState(GameState _state)
     {
         switch (_state)
         {
@@ -61,6 +61,6 @@ public class UIManager : MonoBehaviour
     private void OnDestroy()
     {
         if (GameManager.Instance == null) return;
-        GameManager.Instance.UpdateState -= UpdateState;
+        GameManager.Instance.UpdateState -= AfterUpdateState;
     }
 }
