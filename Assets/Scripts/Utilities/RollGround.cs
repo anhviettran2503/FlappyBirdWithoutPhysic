@@ -14,6 +14,7 @@ public class RollGround : MonoBehaviour
     {
         GameManager.Instance.UpdateSpeed += UpdateSpeed;
         GameManager.Instance.UpdateState += UpdateState;
+        gamespeed = GameManager.Instance.GameSpeed;
     }
     private void Update()
     {
@@ -40,7 +41,7 @@ public class RollGround : MonoBehaviour
     private void OnDestroy()
     {
         if (GameManager.Instance == null) return;
-        GameManager.Instance.UpdateSpeed += UpdateSpeed;
+        GameManager.Instance.UpdateSpeed -= UpdateSpeed;
         GameManager.Instance.UpdateState -= UpdateState;
     }
 }
