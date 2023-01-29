@@ -9,7 +9,7 @@ public class PlayerMove : MonoBehaviour
     private float flyFactor = 6;
     private float gravityFactor = 2.5f;
     private float tilt = 5f;
-
+    private float clampTop = 9;
     private Vector3 direction;
     private void Start()
     {
@@ -26,6 +26,17 @@ public class PlayerMove : MonoBehaviour
     private void Update()
     {
         if (!GameManager.Instance.IsPlaying) return;
+        BirdMove();
+        RotateBird();
+        if (IsGround()) GameManager.Instance.GameOver();
+    }
+    private bool IsGround()
+    {
+        if (transform.position.y < groundPos) return true;
+        return false;
+    }
+    private void BirdMove()
+    {
         if (Input.GetMouseButtonDown(0))
         {
             direction = Vector3.up * flyFactor * GameManager.Instance.GameSpeed;
@@ -33,15 +44,14 @@ public class PlayerMove : MonoBehaviour
         }
         direction.y += gravity * gravityFactor * GameManager.Instance.GameSpeed * Time.deltaTime;
         transform.position += direction * Time.deltaTime;
+        var posY = Mathf.Min(transform.position.y, clampTop);
+        transform.position = new Vector3(transform.position.x, posY, transform.position.z);
+    }
+    private void RotateBird()
+    {
         Vector3 rotation = transform.eulerAngles;
         rotation.z = direction.y * tilt;
         transform.eulerAngles = rotation;
-        if (IsGround()) GameManager.Instance.GameOver();
-    }
-    private bool IsGround()
-    {
-        if (transform.position.y < groundPos) return true;
-        return false;
     }
     private void PlayWingSound()
     {
